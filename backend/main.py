@@ -1,7 +1,7 @@
 import asyncio
 import json
 import websockets
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, Body
 from fastapi.middleware.cors import CORSMiddleware
 import threading
 import os
@@ -13,6 +13,7 @@ from datetime import datetime, timezone, timedelta
 from okx.Trade import TradeAPI
 from okx.Account import AccountAPI
 from pydantic import BaseModel
+from typing import List, Dict, Any
 
 # 加载.env
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
@@ -25,6 +26,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+CONFIG_FILE = os.path.join(os.path.dirname(__file__), 'config.json')
 
 # 读取多账户API信息
 OKX_ACCOUNTS = []
@@ -50,6 +53,19 @@ ACCOUNT_NAMES = [acc['name'] for acc in OKX_ACCOUNTS]
 @app.get("/api/account_names")
 def get_account_names():
     return {"account_names": ACCOUNT_NAMES}
+
+@app.get("/api/config")
+def get_config():
+    if not os.path.exists(CONFIG_FILE):
+        return {"batchOrderInstIds": []}
+    with open(CONFIG_FILE, 'r') as f:
+        return json.load(f)
+
+@app.post("/api/config")
+async def set_config(config: Dict[str, Any] = Body(...)):
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(config, f, indent=2)
+    return {"status": "success"}
 
 latest_data = {}  # {account_idx: [data]}
 ws_clients = set()
@@ -312,7 +328,16 @@ async def okx_account_ws(account_idx, account):
                                 else:
                                     unrealized = 0
                                     unrealized_pct = 0
-                                    
+
+                                # 获取杠杆信息
+                                account_api = AccountAPI(account["apiKey"], account["apiSecret"], account["passphrase"], False, account["flag"])
+                                leverage_result = account_api.get_leverage(instId=instId, mgnMode="cross")
+                                if leverage_result and leverage_result.get("code") == "0" and leverage_result.get("data"):
+                                    for lv_data in leverage_result["data"]:
+                                        if lv_data.get("posSide") == posSide:
+                                            pos["lever"] = lv_data.get("lever")
+                                            break
+                                
                                 pos["unrealizedPnl"] = unrealized
                                 pos["unrealizedPnlPct"] = unrealized_pct
                                 pos["lastPrice"] = markPx
@@ -386,6 +411,8 @@ def start_okx_ws():
 def start_ws_thread():
     threading.Thread(target=start_okx_ws, daemon=True).start()
 
+from starlette.websockets import WebSocketDisconnect
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -394,6 +421,17 @@ async def websocket_endpoint(websocket: WebSocket):
         # Send latest data for all accounts on first connect
         for idx, data in latest_data.items():
             await websocket.send_json({"account": idx, "data": data})
+        
+        # Send current latest prices to the newly connected client
+        for instId, markPx in latest_prices.items():
+            await websocket.send_json({
+                "type": "mark_price",
+                "payload": {
+                    "instId": instId,
+                    "markPx": markPx
+                }
+            })
+
         while True:
             # Keep connection alive
             await websocket.receive_text()

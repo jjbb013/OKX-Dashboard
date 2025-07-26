@@ -1,0 +1,28 @@
+{
+  "batchOrderInstIds": [
+    {
+      "id": "BTC-USDT-SWAP",
+      "enabled": true
+    },
+    {
+      "id": "ETH-USDT-SWAP",
+      "enabled": true
+    },
+    {
+      "id": "SOL-USDT-SWAP",
+      "enabled": false
+    },
+    {
+      "id": "ORDI-USDT-SWAP",
+      "enabled": false
+    },
+    {
+      "id": "DOGE-USDT-SWAP",
+      "enabled": true
+    },
+    {
+      "id": "VINE-USDT-SWAP",
+      "enabled": true
+    }
+  ]
+}

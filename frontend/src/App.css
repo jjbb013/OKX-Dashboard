@@ -20,69 +20,78 @@ body {
 }
 
 .App {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  gap: 30px;
+  text-align: center;
+  background-color: #121212;
+  color: white;
+  min-height: 100vh;
 }
 
 .header {
-  text-align: center;
-  font-size: 2.5rem;
-  color: var(--text-primary);
-  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #1f1f1f;
+  border-bottom: 1px solid #333;
 }
 
 .main-content {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 30px;
+  display: flex;
+  padding: 24px;
+  gap: 24px;
 }
 
 .control-panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-.positions-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  min-width: 300px;
 }
 
 .card {
-  background-color: var(--background-secondary);
+  background-color: #1e1e1e;
+  border: 1px solid #333;
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: left;
 }
 
 .card h2 {
   margin-top: 0;
-  color: var(--accent-primary);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 8px;
+}
+
+.positions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.positions-table th,
+.positions-table td {
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: left;
+}
+
+.positions-table th {
+  background-color: #333;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: bold;
 }
 
-.input, .select {
+.input {
   width: 100%;
-  padding: 10px;
-  background-color: var(--background-tertiary);
-  border: 1px solid var(--border-color);
+  padding: 8px;
   border-radius: 4px;
-  color: var(--text-primary);
-  box-sizing: border-box;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
 }
 
 .button {
@@ -91,70 +100,33 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s ease;
 }
 
 .button-primary {
-  background-color: var(--accent-primary);
+  background-color: #4caf50;
   color: white;
-}
-
-.button-primary:hover {
-  background-color: #0056b3;
 }
 
 .button-danger {
-  background-color: var(--accent-secondary);
+  background-color: #f44336;
   color: white;
 }
 
-.button-danger:hover {
-  background-color: #cc0000;
+.account-selector, .inst-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.positions-table {
-  width: 100%;
-  border-collapse: collapse;
+.account-checkbox, .inst-checkbox {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.positions-table th, .positions-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.positions-table th {
-  background-color: var(--background-tertiary);
-}
-
-.log-viewer {
-  background-color: #111;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 15px;
-  height: 200px;
-  overflow-y: auto;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.9em;
-  color: #ccc;
-}
-
-.log-entry {
-  white-space: pre-wrap;
-}
-
-.account-selector {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.account-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: var(--background-tertiary);
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
+.account-checkbox input, .inst-checkbox input {
+    margin-right: 5px;
 }
